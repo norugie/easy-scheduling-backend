@@ -6,4 +6,6 @@ const origins = env.CORS_ORIGIN.split(",")
   .filter(Boolean);
 
 export const corsOptions: CorsOptions =
-  origins.length === 1 && origins[0] === "*" ? {} : { origin: origins };
+  origins.length === 1 && origins[0] === "*"
+    ? { credentials: true, origin: true }
+    : { credentials: true, origin: origins };

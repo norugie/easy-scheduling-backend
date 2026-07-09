@@ -9,15 +9,17 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "self-check": "tsx src/middlewares/validate.middleware.self-check.ts",
+    "self-check": "tsx src/self-check.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
+    "jose": "^6.2.3",
     "pg": "^8.16.3",
     "zod": "^4.4.3"
   },

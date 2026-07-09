@@ -31,13 +31,17 @@ await new Promise<void>((resolve, reject) => {
 
 assert.equal(statusCode, 400);
 assert.deepEqual(payload, {
-  error: "Validation failed",
-  issues: [
-    {
-      path: ["name"],
-      message: "Too small: expected string to have >=1 characters",
-    },
-  ],
+  success: false,
+  error: {
+    code: "VALIDATION_INVALID_INPUT",
+    message: "The request payload is invalid.",
+    details: [
+      {
+        path: ["name"],
+        message: "Too small: expected string to have >=1 characters",
+      },
+    ],
+  },
 });
 
 let nextCalled = false;

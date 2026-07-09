@@ -1,10 +1,11 @@
 import type { RequestHandler } from "express";
-import type { ZodType } from "zod";
+import type { ZodTypeAny } from "zod";
+import { sendError } from "../lib/api-response.js";
 
 type RequestSchemas = {
-  body?: ZodType;
-  params?: ZodType;
-  query?: ZodType;
+  body?: ZodTypeAny;
+  params?: ZodTypeAny;
+  query?: ZodTypeAny;
 };
 
 export function validateRequest(schemas: RequestSchemas): RequestHandler {
@@ -15,17 +16,26 @@ export function validateRequest(schemas: RequestSchemas): RequestHandler {
       const result = schema.safeParse(req[key as keyof RequestSchemas]);
 
       if (!result.success) {
-        res.status(400).json({
-          error: "Validation failed",
-          issues: result.error.issues.map((issue) => ({
-            path: issue.path,
-            message: issue.message,
-          })),
-        });
+        sendError(
+          res,
+          400,
+          "VALIDATION_INVALID_INPUT",
+          "The request payload is invalid.",
+          result.error.issues.map((issue) => ({ path: issue.path, message: issue.message })),
+        );
         return;
       }
 
-      req[key as "body" | "params" | "query"] = result.data;
+      if (key === "query") {
+        const queryData = result.data as Record<string, unknown>;
+        for (const [qk, qv] of Object.entries(queryData)) {
+          (req.query as Record<string, unknown>)[qk] = qv;
+        }
+        continue;
+      }
+
+      // body/params path remains as before
+      req[key as "body" | "params"] = result.data as never;
     }
 
     next();
